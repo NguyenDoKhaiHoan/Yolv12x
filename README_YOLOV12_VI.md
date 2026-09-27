@@ -56,7 +56,7 @@ Nếu bỏ `--weights`, student sẽ khởi tạo ngẫu nhiên và in thông b�
 **Lưu ý mã upstream:** `train/pretrain_IRT.py` import `nets.reconstruction.model`
 và `train/pretrain_SPT.py` import `nets.detection`, nhưng các thư mục này không có
 trong repo đã tải. Luồng mới thay thế SPT bằng script dưới đây và yêu cầu IRT đã
-pretrain. Chưa bổ sung một mạng phục hồi thay thế IRT để tránh đổi thêm phương pháp.
+pretrain. Bản mới có `dtfa12.train_irt` để tự huấn luyện encoder/decoder từ các cặp fog/clear.
 Loader kiểm tra đủ toàn bộ tensor stem/dark2/dark3, không âm thầm dùng teacher ngẫu nhiên.
 Checkpoint tự train là tái triển khai của workspace, không phải trọng số chính thức của bài báo.
 
