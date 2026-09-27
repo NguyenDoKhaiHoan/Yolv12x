@@ -31,6 +31,8 @@ from pathlib import Path
 REPO = Path('/kaggle/working/Yolv12x')
 if not (REPO / '.git').exists():
     subprocess.run(['git', 'clone', 'https://github.com/NguyenDoKhaiHoan/Yolv12x.git', str(REPO)], check=True)
+else:
+    subprocess.run(['git', '-C', str(REPO), 'pull', '--ff-only'], check=True)
 subprocess.run(['git', '-C', str(REPO), 'rev-parse', 'HEAD'], check=True)
 subprocess.run([sys.executable, '-m', 'pip', 'install', '-q', 'uv'], check=True)
 PY = '/kaggle/working/dtfa-env/bin/python'

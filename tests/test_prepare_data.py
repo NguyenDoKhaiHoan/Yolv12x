@@ -50,6 +50,11 @@ class Preparation(unittest.TestCase):
         spec = yaml.safe_load((self.output / "H.yaml").read_text())
         self.assertTrue(Path(spec["test"]).is_file())
 
+    def test_accepts_archive_parent_with_nested_data_yaml(self):
+        with contextlib.redirect_stdout(io.StringIO()):
+            report = prepare(self.root.parent, self.output, ("L",))
+        self.assertEqual(report["splits"]["val"]["selected_fog"], 1)
+
     def test_rejects_missing_pair(self):
         (self.root / "train/images/F_0000_L.jpg").unlink()
         with self.assertRaisesRegex(ValueError, "Missing 1 selected fog pairs"):

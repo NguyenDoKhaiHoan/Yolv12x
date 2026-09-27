@@ -52,12 +52,23 @@ def annotation(image, labels, size):
 
 def prepare(root, output, levels=("L", "M", "H")):
     root, output = Path(root).resolve(), Path(output).resolve()
+    # Kaggle datasets often add an extra archive directory (e.g. fog/fog/data.yaml).
+    # Accept the dataset parent and normalize to the directory that actually owns data.yaml.
+    data_yaml = root / "data.yaml"
+    if not data_yaml.is_file():
+        candidates = sorted(root.rglob("data.yaml")) if root.is_dir() else []
+        if len(candidates) != 1:
+            raise FileNotFoundError(
+                f"Cannot find a unique data.yaml under {root}; found {candidates}"
+            )
+        data_yaml = candidates[0]
+        root = data_yaml.parent
     levels = tuple(levels)
     if not levels or len(set(levels)) != len(levels) or set(levels) - {"L", "M", "H"}:
         raise ValueError("Select unique levels from L M H")
     if any(char.isspace() for char in str(output)):
         raise ValueError("Prepared output path must not contain spaces (native YOLO validation)")
-    config = yaml.safe_load((root / "data.yaml").read_text(encoding="utf-8-sig"))
+    config = yaml.safe_load(data_yaml.read_text(encoding="utf-8-sig"))
     names = config["names"]
     if isinstance(names, dict):
         names = [names[i] for i in range(len(names))]
