@@ -54,7 +54,7 @@ Mặc định **YOLOv12n**, trộn cả L/M/H khi train và giữ riêng mỗi m
 Đặt `EPOCHS=2` cho lần chạy thử rồi chọn output directory mới cho lần train thật.
 Batch 4 là điểm bắt đầu; giảm còn 2 nếu hết VRAM. Chỉ dùng một GPU (`cuda:0`).
 Nếu auto-detect có nhiều dataset, điền `DATA_ROOT` vào thư mục chứa `data.yaml`.
-`IRT` là đường dẫn `.pth` đã thêm vào Kaggle Input; để `None` nếu chỉ chạy baseline/SPT.
+IRT được tự train từ cặp fog/clear; không cần thêm file `.pth` vào Kaggle Input.
 """)
 code("""
 DATA_ROOT = None  # ví dụ Path('/kaggle/input/your-dataset/fog/fog')
