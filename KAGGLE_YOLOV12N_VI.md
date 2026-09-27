@@ -72,6 +72,11 @@ training hiện tại là single GPU FP32. Giảm batch nếu thiếu VRAM.
 
 ## 3. Chuẩn bị annotation
 
+`prepared` **không nằm trong repository** và không cần tạo thủ công. Notebook tạo thư mục
+`/kaggle/working/prepared` khi chạy cell chuẩn bị dữ liệu. Đây là dữ liệu trung gian sinh
+từ dataset đã mount dưới `/kaggle/input`, nên được loại khỏi Git. Nếu chạy thủ công,
+học lệnh bên dưới trước khi chạy các bước train.
+
 Notebook chạy lệnh tương đương:
 
 ```bash
