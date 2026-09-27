@@ -1,5 +1,11 @@
 # [Neurocomputing-2026] A lightweight framework for robust object detection in adverse weather based on dual-teacher feature alignment 
 
+**YOLOv12s migration:** see [Vietnamese setup, training and inference guide](README_YOLOV12_VI.md).
+The new `dtfa12` pipeline uses native YOLOv12 detection with DTFA teacher alignment.
+
+**YOLOv12n + custom fog L/M/H dataset on Kaggle:** [Vietnamese guide](KAGGLE_YOLOV12N_VI.md)
+and [ready-to-import notebook](notebooks/DTFA_YOLOv12n_Kaggle.ipynb).
+
 Authors: Rui Hu, Hanjun Zheng, Shengjie Ye, [Linbo Qing](https://scholar.google.com.hk/citations?hl=zh-CN&user=0KRDflwAAAAJ), and [Honggang Chen](https://scholar.google.com/citations?user=qkpb0CMAAAAJ)
 
 [[Paper Link]](https://www.sciencedirect.com/science/article/pii/S0925231226001232)
