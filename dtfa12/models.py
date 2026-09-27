@@ -62,12 +62,24 @@ def feature_channels(model):
         model.train(training)
 
 
-class IRTFeatures(nn.Module):
-    """The original IRT encoder, truncated after dark3 as in the AFB objective."""
-    def __init__(self, checkpoint):
+class IRTEncoder(nn.Module):
+    """Original shallow encoder blocks and preprocessing shared by train and AWD."""
+    def __init__(self):
         super().__init__()
         original = ShallowNet().backbone
         self.stem, self.dark2, self.dark3 = original.stem, original.dark2, original.dark3
+
+    def forward(self, rgb):
+        mean = rgb.new_tensor([0.485, 0.456, 0.406])[None, :, None, None]
+        std = rgb.new_tensor([0.229, 0.224, 0.225])[None, :, None, None]
+        p2 = self.dark2(self.stem((rgb - mean) / std))
+        return self.dark3(p2), p2
+
+
+class IRTFeatures(IRTEncoder):
+    """Load a pretrained encoder and freeze it for AWD feature alignment."""
+    def __init__(self, checkpoint):
+        super().__init__()
         # Original DTFA checkpoints are plain state_dicts, not pickled modules.
         state = torch.load(checkpoint, map_location="cpu", weights_only=True)
         state = state.get("state_dict", state)
@@ -86,14 +98,6 @@ class IRTFeatures(nn.Module):
                              f"e.g. {sorted(missing)[:5]}")
         self.load_state_dict(selected, strict=True)
         self.requires_grad_(False).eval()
-
-    def forward(self, rgb):
-        # YOLOv12 uses RGB [0,1]; original IRT uses ImageNet normalization.
-        mean = rgb.new_tensor([0.485, 0.456, 0.406])[None, :, None, None]
-        std = rgb.new_tensor([0.229, 0.224, 0.225])[None, :, None, None]
-        p2 = self.dark2(self.stem((rgb - mean) / std))
-        return self.dark3(p2), p2
-
 
 class Bridge(nn.Module):
     """Adapt channels, then retain the original shared pyramid and masked loss."""

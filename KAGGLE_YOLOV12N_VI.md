@@ -98,18 +98,13 @@ bản turbo chính thức. Các bước:
 
 1. **Baseline**: YOLOv12n học trên fog, không có teacher.
 2. **SPT**: YOLOv12n học trên clear, sau đó đóng băng.
-3. **AWD**: student YOLOv12n học trên fog cùng guidance từ SPT và IRT trên clear.
+3. **IRT reconstruction**: encoder IRT học tái tạo clear từ fog; chọn checkpoint tốt nhất theo validation L1.
+4. **AWD**: student YOLOv12n học trên fog cùng guidance từ SPT và IRT trên clear.
 
-**AWD cần IRT pretrained.** Download checkpoint từ [README DTFA gốc](https://github.com/huruo1010/DTFA),
-thêm nó vào Kaggle Input và đặt:
-
-```python
-IRT = Path('/kaggle/input/TEN-DATASET-WEIGHTS/IRT.pth')
-```
-
-Repo DTFA gốc thiếu module được import bởi script pretrain IRT, nên bản tích hợp
-hiện yêu cầu checkpoint IRT có sẵn. Không lấy weights YOLOv12n/SPT làm IRT.
-Chưa có IRT thì chạy baseline và SPT trước; cell AWD sẽ báo rõ điều kiện còn thiếu.
+Notebook tự chạy `dtfa12.train_irt` trên các cặp fog/clear nên không cần tải IRT bên ngoài.
+`runs/yolov12n/irt/IRT.pth` là encoder tương thích AFB của bản tái triển khai này,
+được chọn theo validation L1; đây không phải trọng số chính thức của bài báo.
+Nếu IRT loss không hữu hạn hoặc PSNR không cải thiện, dừng AWD và kiểm tra cặp ảnh.
 
 ## 5. Đánh giá và lưu kết quả
 

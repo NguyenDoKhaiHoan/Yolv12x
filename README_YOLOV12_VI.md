@@ -13,7 +13,7 @@ không chỉ thay backbone rồi giữ head/loss YOLOX. Mã YOLOX gốc được
 |---|---|
 | AWD student | YOLOv12s: backbone, neck, Detect head và loss native (box, cls, DFL / TaskAlignedAssigner) |
 | SPT | YOLOv12s được train trên ảnh sạch, đóng băng khi train AWD |
-| IRT | Encoder phục hồi gốc DTFA, lấy stem/dark2/dark3 từ checkpoint IRT có sẵn, đóng băng |
+ | IRT | Encoder tương thích AFB, tự pretrain từ cặp fog/clear bằng `dtfa12.train_irt`, rồi đóng băng |
 | AFB | Lấy feature backbone tại stride 8 và 4; chiếu số kênh về 128/64 rồi dùng `AFBLoss` gốc |
 | Suy luận | Chỉ YOLOv12s student; giải mã và NMS native, không chạy teacher/AFB |
 
@@ -58,7 +58,7 @@ và `train/pretrain_SPT.py` import `nets.detection`, nhưng các thư mục này
 trong repo đã tải. Luồng mới thay thế SPT bằng script dưới đây và yêu cầu IRT đã
 pretrain. Chưa bổ sung một mạng phục hồi thay thế IRT để tránh đổi thêm phương pháp.
 Loader kiểm tra đủ toàn bộ tensor stem/dark2/dark3, không âm thầm dùng teacher ngẫu nhiên.
-Chưa có checkpoint IRT thật trong workspace để xác nhận định dạng của file tác giả.
+Checkpoint tự train là tái triển khai của workspace, không phải trọng số chính thức của bài báo.
 
 ## Dữ liệu
 

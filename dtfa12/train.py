@@ -24,7 +24,7 @@ def parser():
     p.add_argument("--val", required=True, help="DTFA annotation txt")
     p.add_argument("--clean-train", help="Aligned clean rows for AWD")
     p.add_argument("--spt", help="best.pt from stage spt")
-    p.add_argument("--irt", help="Original pretrained IRT .pth state_dict")
+    p.add_argument("--irt", help="Original IRT or IRT.pth exported by dtfa12.train_irt")
     p.add_argument("--weights", help="Optional local official YOLOv12 pretrained .pt")
     p.add_argument("--scale", choices=list("nslmx"), default="s")
     p.add_argument("--imgsz", type=int, default=640)

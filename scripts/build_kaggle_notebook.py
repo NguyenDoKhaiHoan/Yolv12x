@@ -21,8 +21,8 @@ ba mức của cùng cảnh phải nằm cùng split.
 
 Notebook tạo Python 3.11 riêng trong `/kaggle/working`, không thay PyTorch của kernel.
 Ảnh nằm trong `/kaggle/input`; annotation, model và metrics ghi vào `/kaggle/working`.
-**AWD cần checkpoint IRT đã pretrain của DTFA.** Baseline và SPT không cần IRT.
-Không dùng teacher ngẫu nhiên để thay checkpoint thiếu.
+Notebook tự pretrain IRT từ cặp fog/clear, vì vậy không cần tải `IRT.pth` bên ngoài.
+`IRT.pth` sinh ra là checkpoint tái triển khai của dự án và được đánh giá bằng PSNR/L1.
 """)
 code("""
 import os, sys, subprocess
@@ -58,8 +58,8 @@ Nếu auto-detect có nhiều dataset, điền `DATA_ROOT` vào thư mục chứ
 """)
 code("""
 DATA_ROOT = None  # ví dụ Path('/kaggle/input/your-dataset/fog/fog')
-IRT = None        # ví dụ Path('/kaggle/input/dtfa-weights/IRT.pth')
 EPOCHS = 100
+IRT_EPOCHS = 50
 BATCH = 4
 IMAGE_SIZE = 640
 LEVELS = ['L', 'M', 'H']
@@ -112,15 +112,19 @@ run('-m', 'dtfa12.train', '--stage', 'spt', *COMMON,
     '--output', RUNS / 'spt')
 """)
 md("""
-## 3. DTFA–YOLOv12n trên các cặp fog/clear
-Tải IRT từ liên kết pretrained trong README repo DTFA gốc và thêm vào Kaggle Input.
-Mã IRT pretraining của upstream còn thiếu module; notebook dùng checkpoint IRT có sẵn.
-Cell này dừng rõ ràng nếu chưa có IRT. Chọn file tương thích encoder gốc;
-loader sẽ báo thiếu tensor thay vì âm thầm chạy với teacher ngẫu nhiên.
+## 3. Tự pretrain IRT từ fog/clear
+Không cần tải file IRT của tác giả. IRT được huấn luyện bằng reconstruction L1:
+fog L/M/H → clear tương ứng; validation chỉ dùng để chọn checkpoint. Mạng encoder
+tương thích AFB và decoder reconstruction là tái triển khai có tên recipe riêng.
 """)
 code("""
-if IRT is None or not Path(IRT).is_file():
-    raise FileNotFoundError('Add pretrained DTFA IRT.pth to Kaggle Input and set IRT in the configuration cell.')
+IRT_RUN = RUNS / 'irt'
+run('-m', 'dtfa12.train_irt', '--classes', PREPARED / 'classes.txt',
+    '--train', PREPARED / 'train_fog.jsonl', '--clean-train', PREPARED / 'train_paired_clear.jsonl',
+    '--val', PREPARED / 'val_fog.jsonl', '--clean-val', PREPARED / 'val_paired_clear.jsonl',
+    '--epochs', IRT_EPOCHS, '--batch', BATCH, '--imgsz', IMAGE_SIZE,
+    '--device', 'cuda:0', '--workers', 2, '--output', IRT_RUN)
+IRT = IRT_RUN / 'IRT.pth'
 run('-m', 'dtfa12.train', '--stage', 'awd', *COMMON,
     '--train', PREPARED / 'train_fog.jsonl',
     '--clean-train', PREPARED / 'train_paired_clear.jsonl',
